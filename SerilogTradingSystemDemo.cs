@@ -121,7 +121,7 @@ public class MySymbolScript : MySymbolScriptBase
         if (!order.CancelPending)
         {
             OutputWarning("Unexpected order cancel: " + order.ToString() + " " + information);
-            TradingSystem.Log.Warning("Unexpected order cancel for {Order} {Position}: {Information}", order, position, information);
+            TradingSystem.Log.Warning("Unexpected order cancel for {@Order} {Position}: {Information}", order, position, information);
         }
 	}
 }
