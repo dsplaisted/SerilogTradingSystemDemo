@@ -6,13 +6,18 @@ using System.Linq;
 using RightEdge.Common;
 using RightEdge.Common.ChartObjects;
 using RightEdge.Indicators;
+using Serilog;
 #endregion
 
 public class MySystem : MySystemBase
 {
+    public ILogger Log { get; private set; }
+
 	public override void Startup()
 	{
-
+        Log = new LoggerConfiguration()
+            .WriteTo.Seq("http://localhost:5341")
+            .CreateLogger();
 	}
 }
 
@@ -116,6 +121,7 @@ public class MySymbolScript : MySymbolScriptBase
         if (!order.CancelPending)
         {
             OutputWarning("Unexpected order cancel: " + order.ToString() + " " + information);
+            TradingSystem.Log.Warning("Unexpected order cancel for {Order} {Position}: {Information}", order, position, information);
         }
 	}
 }
