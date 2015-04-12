@@ -16,6 +16,27 @@ public class MySystem : MySystemBase
 	public override void Startup()
 	{
         Log = new LoggerConfiguration()
+            .Destructure.ByTransforming<Order>(o => new
+            {
+                OrderID = o.ID,
+                PositionID = o.BrokerOrder.PositionID,
+                Symbol = o.Symbol,
+                OrderType = o.OrderType,
+                TransactionType = o.TransactionType,
+                Size = o.Size,
+                LimitPrice = o.LimitPrice,
+                StopPrice = o.StopPrice,
+                OrderState = o.OrderState,
+                Description = o.Description
+            })
+            .Destructure.ByTransforming<Position>(p => new
+            {
+                ID = p.ID,
+                PositionType = p.Type,
+                Symbol = p.Symbol,
+                CurrentSize = p.CurrentSize
+            })
+            .Destructure.AsScalar<Symbol>()
             .WriteTo.Seq("http://localhost:5341")
             .CreateLogger();
 	}
@@ -121,7 +142,7 @@ public class MySymbolScript : MySymbolScriptBase
         if (!order.CancelPending)
         {
             OutputWarning("Unexpected order cancel: " + order.ToString() + " " + information);
-            TradingSystem.Log.Warning("Unexpected order cancel for {@Order} {Position}: {Information}", order, position, information);
+            TradingSystem.Log.Warning("Unexpected order cancel for {@Order} {@Position}: {Information}", order, position, information);
         }
 	}
 }
