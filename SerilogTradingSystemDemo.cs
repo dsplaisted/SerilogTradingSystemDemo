@@ -92,7 +92,10 @@ public class MySymbolScript : MySymbolScriptBase
 
 	public override void OrderFilled(Position position, Trade trade)
 	{
-        TradingSystem.Log.Information("Order filled {@Fill} {@Order}, {@Position}", trade.Order.Fills.Last(), trade.Order, position);
+        double realizedProfit = GetRealizedProfit(position, trade);
+
+        TradingSystem.Log.ForContext("RealizedProfit", realizedProfit)
+            .Information("Order filled {@Fill} {@Order}, {@Position}", trade.Order.Fills.Last(), trade.Order, position);
 
         if (trade.TradeType == TradeType.OpenPosition)
         {
@@ -161,4 +164,19 @@ public class MySymbolScript : MySymbolScriptBase
             TradingSystem.Log.Warning("Unexpected order cancel for {@Order} {@Position}: {Information}", order, position, information);
         }
 	}
+
+    private double GetRealizedProfit(Position position, Trade trade)
+    {
+        double realizedProfit;
+        if (trade.TradeIndex == 0)
+        {
+            realizedProfit = trade.PositionStats.RealizedProfit;
+        }
+        else
+        {
+            var prevStats = position.Trades[trade.TradeIndex - 1].PositionStats;
+            realizedProfit = trade.PositionStats.RealizedProfit - prevStats.RealizedProfit;
+        }
+        return realizedProfit;
+    }
 }
