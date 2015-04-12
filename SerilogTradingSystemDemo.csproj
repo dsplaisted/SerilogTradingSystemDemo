@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClasses.cs" />
+    <Compile Include="LogExtensions.cs" />
     <Compile Include="SerilogTradingSystemDemo.cs" />
     <Compile Include="SimulationTimeEnricher.cs" />
   </ItemGroup>

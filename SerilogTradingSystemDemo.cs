@@ -53,7 +53,7 @@ public class MySystem : MySystemBase
 
     void PositionManager_OrderSubmitted(object sender, OrderUpdatedEventArgs e)
     {
-        Log.Information("Order submitted: {@Order} {@Position}", e.Order, e.Position);
+        Log.With(e.Position).With(e.Order).Information("Order submitted: {OrderString}", e.Order);
     }
 }
 
@@ -94,9 +94,12 @@ public class MySymbolScript : MySymbolScriptBase
 	public override void OrderFilled(Position position, Trade trade)
 	{
         double realizedProfit = GetRealizedProfit(position, trade);
+        Fill fill = trade.Order.Fills.Last();
 
         TradingSystem.Log.ForContext("RealizedProfit", realizedProfit)
-            .Information("Order filled {@Fill} {@Order}, {@Position}", trade.Order.Fills.Last(), trade.Order, position);
+            .With(position).With(trade.Order)
+            .ForContext("Fill", fill, true)
+            .Information("Order filled: {OrderString} {FillString}", trade.Order, fill);
 
         if (trade.TradeType == TradeType.OpenPosition)
         {
@@ -162,7 +165,7 @@ public class MySymbolScript : MySymbolScriptBase
         if (!order.CancelPending)
         {
             OutputWarning("Unexpected order cancel: " + order.ToString() + " " + information);
-            TradingSystem.Log.Warning("Unexpected order cancel for {@Order} {@Position}: {Information}", order, position, information);
+            TradingSystem.Log.With(position).With(order).Warning("Unexpected order cancel for {OrderString}: {Information}", order, information);
         }
 	}
 
