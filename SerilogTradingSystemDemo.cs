@@ -9,6 +9,10 @@ using RightEdge.Indicators;
 using Serilog;
 #endregion
 
+//  index="serilog" | spath "Properties.Order.Description"| stats count by "Properties.Order.Description"
+//  index="serilog" | spath "Properties.PositionID"| spath "Properties.RealizedProfit" | stats sum("Properties.RealizedProfit") by "Properties.PositionID"
+//  index="serilog" | spath "Properties.PositionID"| spath "Properties.RealizedProfit" | stats sum("Properties.RealizedProfit") As PositionProfit by "Properties.PositionID" | chart count by "PositionProfit" span=100
+
 public class MySystem : MySystemBase
 {
     public ILogger Log { get; private set; }
@@ -45,6 +49,7 @@ public class MySystem : MySystemBase
             .Destructure.AsScalar<Symbol>()
             .Enrich.With(new SimulationTimeEnricher(SystemData))
             .WriteTo.Seq("http://localhost:5341")
+            .WriteTo.SplunkViaTcp("127.0.0.1", 10001)
             .CreateLogger()
             .ForContext("SimulationGuid", Guid.NewGuid());
 
