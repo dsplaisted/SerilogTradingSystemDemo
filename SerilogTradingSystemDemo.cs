@@ -43,6 +43,7 @@ public class MySystem : MySystemBase
                 Size = f.Quantity
             })
             .Destructure.AsScalar<Symbol>()
+            .Enrich.With(new SimulationTimeEnricher(SystemData))
             .WriteTo.Seq("http://localhost:5341")
             .CreateLogger()
             .ForContext("SimulationGuid", Guid.NewGuid());

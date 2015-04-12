@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="BaseClasses.cs" />
     <Compile Include="SerilogTradingSystemDemo.cs" />
+    <Compile Include="SimulationTimeEnricher.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
