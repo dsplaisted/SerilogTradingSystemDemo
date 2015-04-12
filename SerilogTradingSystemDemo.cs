@@ -36,10 +36,23 @@ public class MySystem : MySystemBase
                 Symbol = p.Symbol,
                 CurrentSize = p.CurrentSize
             })
+            .Destructure.ByTransforming<Fill>(f => new
+            {
+                FilledTime = f.FillDateTime,
+                Price = f.Price.SymbolPrice,
+                Size = f.Quantity
+            })
             .Destructure.AsScalar<Symbol>()
             .WriteTo.Seq("http://localhost:5341")
             .CreateLogger();
+
+        PositionManager.OrderSubmitted += PositionManager_OrderSubmitted;
 	}
+
+    void PositionManager_OrderSubmitted(object sender, OrderUpdatedEventArgs e)
+    {
+        Log.Information("Order submitted: {@Order} {@Position}", e.Order, e.Position);
+    }
 }
 
 
@@ -78,6 +91,8 @@ public class MySymbolScript : MySymbolScriptBase
 
 	public override void OrderFilled(Position position, Trade trade)
 	{
+        TradingSystem.Log.Information("Order filled {@Fill} {@Order}, {@Position}", trade.Order.Fills.Last(), trade.Order, position);
+
         if (trade.TradeType == TradeType.OpenPosition)
         {
             long step1 = (long) Math.Ceiling((double)position.CurrentSize / 2);
