@@ -44,7 +44,8 @@ public class MySystem : MySystemBase
             })
             .Destructure.AsScalar<Symbol>()
             .WriteTo.Seq("http://localhost:5341")
-            .CreateLogger();
+            .CreateLogger()
+            .ForContext("SimulationGuid", Guid.NewGuid());
 
         PositionManager.OrderSubmitted += PositionManager_OrderSubmitted;
 	}
